@@ -1,6 +1,4 @@
 from nextcord.ext import commands
-from random import randint,choice
-from time import sleep
 import nextcord
 import os
 import mariadb

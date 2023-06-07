@@ -1,8 +1,5 @@
 from nextcord.ext import commands
-from random import randint,choice
-from time import sleep
 import nextcord
-import sqlite3
 import os
 
 intents = nextcord.Intents.default()
