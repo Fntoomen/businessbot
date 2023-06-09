@@ -28,7 +28,7 @@ def check_company_exists(name):
         database="bot"
     )
     cur = conn.cursor()
-    cur.execute("SELECT COUNT(name) FROM companies WHERE name = ? LIMIT 1", (name,))
+    cur.execute("SELECT COUNT(name) FROM companies WHERE LOWER(name) = ? LIMIT 1", (name.lower(),))
     res = cur.fetchone()
     conn.close()
     return res[0]
