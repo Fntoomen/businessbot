@@ -16,7 +16,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, reason):
+    async def kick(self, ctx, member: nextcord.Member):
         conn = mariadb.connect (
             user="root",
             password="passwd",
@@ -25,7 +25,7 @@ class Moderation(commands.Cog):
             database="bot"
         )
         cur = conn.cursor()
-        await bot.kick(member, reason)
+        await bot.kick(member)
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
         userID = cur.fetchone()[0]
         cur.execute("DELETE FROM users WHERE user_id = ?", (userID,))
@@ -42,7 +42,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @has_permissions(kick_members=True)
-    async def ban(self, ctx, member: discord.Member, reason):
+    async def ban(self, ctx, member: nextcord.Member):
         conn = mariadb.connect (
             user="root",
             password="passwd",
@@ -51,7 +51,7 @@ class Moderation(commands.Cog):
             database="bot"
         )
         cur = conn.cursor()
-        await bot.ban(member, reason)
+        await bot.ban(member)
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
         userID = cur.fetchone()[0]
         cur.execute("DELETE FROM users WHERE user_id = ?", (userID,))
@@ -68,7 +68,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @has_permissions(administrator=True)
-    async def clear_money(self, ctx, member: discord.Member):
+    async def clear_money(self, ctx, member: nextcord.Member):
         conn = mariadb.connect (
             user="root",
             password="passwd",
@@ -77,7 +77,6 @@ class Moderation(commands.Cog):
             database="bot"
         )
         cur = conn.cursor()
-        await bot.kick(member, reason)
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
         userID = cur.fetchone()[0]
         cur.execute("UPDATE users SET money = 0 WHERE user_id = ?", (userID,))
