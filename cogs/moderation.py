@@ -1,6 +1,5 @@
-from nextcord.ext import commands
-from nextcord.ext.application_checks import has_permissions
 import nextcord
+from nextcord.ext import commands
 import os
 import mariadb
 import sys
@@ -23,7 +22,7 @@ class Moderation(commands.Cog):
         print('Cog: Moderation is on')
 
     @commands.command()
-    @has_permissions(kick_members=True)
+    @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: nextcord.Member):
         await bot.kick(member)
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
@@ -42,7 +41,7 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    @has_permissions(kick_members=True)
+    @commands.has_permissions(kick_members=True)
     async def ban(self, ctx, member: nextcord.Member):
         await bot.ban(member)
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
@@ -61,7 +60,7 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    @has_permissions(administrator=True)
+    @commands.has_permissions(administrator=True)
     async def clear_money(self, ctx, member: nextcord.Member):
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
         userID = cur.fetchone()
