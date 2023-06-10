@@ -5,6 +5,14 @@ import os
 import mariadb
 import sys
 
+conn = mariadb.connect (
+    user="root",
+    password="passwd",
+    host="localhost",
+    port=3306,
+    database="bot"
+)
+cur = conn.cursor()
 
 class Moderation(commands.Cog):
     def __init__(self,bot):
@@ -17,21 +25,14 @@ class Moderation(commands.Cog):
     @commands.command()
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member: nextcord.Member):
-        conn = mariadb.connect (
-            user="root",
-            password="passwd",
-            host="localhost",
-            port=3306,
-            database="bot"
-        )
-        cur = conn.cursor()
         await bot.kick(member)
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
-        userID = cur.fetchone()[0]
+        userID = cur.fetchone()
+        if userID is not None:
+            userID = userID[0]
         cur.execute("DELETE FROM users WHERE user_id = ?", (userID,))
         cur.execute("DELETE FROM companies WHERE user_id = ?", (userID,))
         conn.commit()
-        conn.close()
         embed=nextcord.Embed(title="Wyrzucono użytkownika", description=member.mention, color=0x44ff00)
         await ctx.send(embed=embed)
     @kick.error
@@ -43,21 +44,14 @@ class Moderation(commands.Cog):
     @commands.command()
     @has_permissions(kick_members=True)
     async def ban(self, ctx, member: nextcord.Member):
-        conn = mariadb.connect (
-            user="root",
-            password="passwd",
-            host="localhost",
-            port=3306,
-            database="bot"
-        )
-        cur = conn.cursor()
         await bot.ban(member)
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
-        userID = cur.fetchone()[0]
+        userID = cur.fetchone()
+        if userID is not None:
+            userID = userID[0]
         cur.execute("DELETE FROM users WHERE user_id = ?", (userID,))
         cur.execute("DELETE FROM companies WHERE user_id = ?", (userID,))
         conn.commit()
-        conn.close()
         embed=nextcord.Embed(title="Zbanowano użytkownika", description=member.mention, color=0x44ff00)
         await ctx.send(embed=embed)
     @ban.error
@@ -69,19 +63,12 @@ class Moderation(commands.Cog):
     @commands.command()
     @has_permissions(administrator=True)
     async def clear_money(self, ctx, member: nextcord.Member):
-        conn = mariadb.connect (
-            user="root",
-            password="passwd",
-            host="localhost",
-            port=3306,
-            database="bot"
-        )
-        cur = conn.cursor()
         cur.execute("SELECT user_id FROM users WHERE discord_id = ?", (member.id,))
-        userID = cur.fetchone()[0]
+        userID = cur.fetchone()
+        if userID is not None:
+            userID = userID[0]
         cur.execute("UPDATE users SET money = 0 WHERE user_id = ?", (userID,))
         conn.commit()
-        conn.close()
         embed=nextcord.Embed(title="Wyczyszczono konto użytkownika", description=member.mention, color=0x44ff00)
         await ctx.send(embed=embed)
     @clear_money.error
@@ -92,3 +79,5 @@ class Moderation(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
+
+conn.close()
